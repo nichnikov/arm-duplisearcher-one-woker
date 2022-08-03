@@ -1,3 +1,5 @@
+import os
+import json
 from flask import Flask, jsonify, request
 from flask_restplus import Api, Resource, fields
 from utils import Worker
@@ -35,7 +37,13 @@ input_data = name_space.model("Input JSONs",
                                "operation": fields.String(description="add/update/delete/search/del_all",
                                                           required=True)})
 
-main = Worker(50000, 33000)
+
+with open(os.path.join("data", "config.json")) as json_config_file:
+    config = json.load(json_config_file)
+
+print("config:", config)
+
+main = Worker(config["shard_size"], config["dictionary_size"])
 
 
 @name_space.route('/')
